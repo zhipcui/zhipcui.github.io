@@ -1,0 +1,22 @@
+---
+layout: default
+---
+<h2 class="post_title">{{page.title}}</h2>
+<hr class="post-list__divider" />
+
+<ol class="post-list">
+    {% for post in site.posts %}
+	{% for tag in post.tags %}
+	{% if tag == page.tag %}
+        <li>
+        <h2 class="post-list__post-title post-title"><a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a></h2>
+        <p class="excerpt">{{ post.excerpt }}</p>
+        <div class="post-list__meta"><time datetime="{{ post.date | date_to_string }}" class="post-list__meta--date date">{{ post.date | date_to_string }}</time> &#8226; <span class="post-list__meta--tags tags">于 <a href="/tag/{{ tag }}">{{ tag }}</a></span><a class="btn-border-small" href="{{ post.url }}"/>继续阅读</a></div>
+        <hr class="post-list__divider" />
+
+      </li>
+    {% endif %}
+	{% endfor %}
+	{% endfor %}
+
+ </ol>

@@ -1,11 +1,11 @@
 ---
-layout: default_index
+layout: default
 ---
 <h2>{{ page.title }}</h2>
 <div class="post-list__meta">
 	<time datetime="{{ page.date | date_to_string }}" class="post-list__meta--date date">{{ page.date | date_to_string }}
 	</time> &#8226; 
-	<span class="post-list__meta--tags tags">于 <a href="/tag/neng-gong-qiao-jiang-ji/">{{ page.tags}}</a></span>
+	<span class="post-list__meta--tags tags">于 <a href="/tag/{{ page.tag }}">{{ page.tag }}</a></span>
 
 </div>
 
@@ -13,7 +13,6 @@ layout: default_index
 <div class="post">
 {{ content }}
 </div>
-
 
 <div>
 <section class="post-comments">

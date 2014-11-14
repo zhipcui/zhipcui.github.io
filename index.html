@@ -1,5 +1,5 @@
 ---
-layout: default_index
+layout: default
 title: zhipcui
 ---
 
@@ -9,7 +9,7 @@ title: zhipcui
         <li>
         <h2 class="post-list__post-title post-title"><a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a></h2>
         <p class="excerpt">{{ post.excerpt }}</p>
-        <div class="post-list__meta"><time datetime="{{ post.date | date_to_string }}" class="post-list__meta--date date">{{ post.date | date_to_string }}</time> &#8226; <span class="post-list__meta--tags tags">于 <a href="/tag/neng-gong-qiao-jiang-ji/">{{ post.tags}}</a></span><a class="btn-border-small" href="{{ post.url }}"/>继续阅读</a></div>
+        <div class="post-list__meta"><time datetime="{{ post.date | date_to_string }}" class="post-list__meta--date date">{{ post.date | date_to_string }}</time> &#8226; <span class="post-list__meta--tags tags">于 <a href="/tag/{{ post.tag }}">{{ post.tag }}</a></span><a class="btn-border-small" href="{{ post.url }}"/>继续阅读</a></div>
         <hr class="post-list__divider" />
 
       </li>
