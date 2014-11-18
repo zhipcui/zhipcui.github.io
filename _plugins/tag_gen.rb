@@ -19,7 +19,7 @@ module Jekyll
     
     def generate(site)
       if site.layouts.key? 'tag_index'
-        dir = 'tag'
+        dir ='tag'
         site.tags.keys.each do |tag|
           write_tag_index(site, File.join(dir, tag), tag)
         end
@@ -30,6 +30,7 @@ module Jekyll
       index = TagIndex.new(site, site.source, dir, tag)
       index.render(site.layouts, site.site_payload)
       index.write(site.dest)
+      index.write(site.source)
       site.pages << index
     end
   end
