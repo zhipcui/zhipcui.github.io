@@ -244,5 +244,253 @@ ruby的字符串可以存可打印字符，也可以存有二进制数据。字�
 	Song: Texas Red--Strength in Numbers (249)
 	Song: Wonderful World--Louis Armstrong (178)
 
-我们再用50页来讨论`String`类的方法也说不完，感兴趣的可以查看文档。下面我们继续我们的标准类型的讨论，下一个是“范围”类型。
+我们再用50页来讨论`String`类的方法也说不完，感兴趣的可以查看文档。下面我们继续我们的标准类型的讨论，下一个是`Range`(范围)类型。
+
+
+###Ranges
+
+表示范围的值经常得到使用，如从一月到十二月，0到9，第50行到67行等。如果ruby有助于我们构建现实世界模型的话，那么支持表示范围的数据类型那是再自然不过的事情了。事实上ruby的范围类型做了更多的扩展，它使用范围实现3种独特的特性：序列，条件，和间隔。
+
+####range作为序列
+
+range(范围)最主要的作用应该是用来表示一个序列了。序列有一个起始值、终止值和生成连续值的方法。在ruby中，你使用`..`或`...`范围操作符来声明一个序列。2个点的操作符包含最大值，3个点的操作符不包含最大值。
+
+	1..10
+	'a'..'z'
+	0...anArray.length
+
+在ruby中，范围值不是以数组的形式存储，而是是一个`range`对象，保存了2个`Fixnum`对象的引用。如果你需要把范围的值存到数组中，要用`to_a`方法转换为数组类型。
+
+	(1..10).to_a		    >> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+	('bar'..'bat').to_a	    >> ["bar", "bas", "bat"]
+
+'Range'实现了多个方法来迭代它的元素。
+
+	digits = 0..9
+	
+	digits.include?(5)	»	true
+	
+	digits.min      >> 0
+	
+	digits.max      >> 9
+	
+	digits.reject { |i| i < 5 }     >> [5, 6, 7, 8, 9]
+	
+	digits.each do |digit|
+		dial(digit)
+	end
+
+到目前为止，我们表示的范围值都是数字或者字符串。对象也可以用来表示范围，但是要求在你定义的类中实现2个方法：`succ`与`<=>`。`succ`方法用来返回序列的下一个值；`<=>`方法用来实现对象的比较，`<=>`也是比较运算符，根据第一个值小于、等于、大于第二个值而对应返回-1,0,1。
+
+下面的例子实现用'#'符号来表示声音大小，我们可以用来实现点唱机的声音调节器。
+
+	class VU
+	
+		include Comparable
+		
+		attr :volume
+		
+		def initialize(volume)  # 0..9
+    		@volume = volume
+    	end
+    	
+    	def inspect
+    		'#' * @volume
+    	end
+    	
+    	# Support for ranges
+    	def <=>(other)
+    		self.volume <=> other.volume
+    	end
+    	
+    	def succ
+    		raise(IndexError, "Volume too big") if @volume >= 9
+    		VU.new(@volume.succ)
+    	end
+    end
+
+测试一下：
+
+	medium = VU.new(4)..VU.new(7)
+	medium.to_a	     >> [####, #####, ######, #######]
+	medium.include?(VU.new(3))	   >> false
+	
+####Range作为条件
+
+范围可以用来做条件语句，例如，下面的代码段是把从标准输入的数据输出，条件就是输入的数据首行要包含"start"词，末行包含"end"这个词语。
+
+	while gets
+		print if /start/../end/
+	end
+	
+我们将在后面讲循环语句是给出更多的例子。
+
+####Range作为中间值判断
+
+范围最后一个运用时作为中间只判断，可以看看某个值是不是在某一范围内，使用的是`===`运算符。
+
+	(1..10)    === 5	     >> true
+	(1..10)    === 15	     >> false
+	(1..10)    === 3.14159	 >>	true
+	('a'..'j') === 'c'	     >> true
+	('a'..'j') === 'z'	     >> false
+
+`case`语句会运用到Range的这个用法。
+
+
+###正则表达式 
+
+会想一下上次我们提到的从文件中创建歌曲列表时，我们用了一个正则表达式来匹配各个域之间的分隔符。我们声明的语句`line.splint(/\s*\|\s*/)`会匹配到`|`和包围其之外多个的空格符。我们现在来探索一下正则表达式是怎么工作的。
+
+正则表达式是匹配字符串的模式。ruby原生支持正则表达式，这一小节将会学习到ruby的正则表达式的所有主要特性。
+
+正则表达式是`Regexp`类的对象。可以通过显示的构造器生成，也可以用`/pattern/`或`%r\pattern\`的形式。
+
+	a = Eegexp.new('^\s*[a-z]')     >> /^\s*[a-z]/
+	b = /^\s*[a-z]/                 >> /^\s*[a-z]/
+	c = %r{^\s*[a-z]}               >> /^\s*[a-z]/
+	
+一旦你拥有一个正则表达式对象，你可以用它与字符串对象来做匹配，使用`Regexp#match(aString)`方法，或者匹配操作符`=~`与匹配操作符的否`!~`。匹配操作符在`String`和`Regexp`对象中都有定义。如果2个字符串做匹配的话，右边的字符串讲转换为正则表达式。
+
+	a = "Fats Waller" 
+	a =~ /a/                >> 1
+	a =~ /z/                >> nil
+	a =~ "ll"				 >> 7
+	
+匹配操作符会返回匹配到的字符位置。这些操作符会有边缘效果，意思是有把特定的值赋给ruby的全局变量。" $& "保存了匹配的字符串；“ $｀ ”保存了匹配位置之前的字符串，" $' "保存了匹配位置之后的字符串。我们可以写一个方法`showRE，显示匹配位置在哪里。
+
+
+	def showRE(a,re)
+  		if a =~ re
+    	"#{$`}<<#{$&}>>#{$'}"
+  		else
+    		"no match"
+  		end
+	end
+	showRE('very interesting', /t/)	»	very in<<t>>eresting
+	showRE('Fats Waller', /ll/)	»	Fats Wa<<ll>>er
+	
+匹配操作工程还会设置几个线程全局的变量:`$~`,`$1`~`$9`。`$~`变量是一个`MatchData`类的对象，其中包含了所有有关匹配的信息。`$1`和后面其他的变量保存了多个匹配的信息。我们将在后面见到这些变量的运用。
+
+
+####模式
+
+每一个正则表达式都包含一个模式，描述了匹配规则。
+
+在正则表达式的模式中，除了`.`,`|`,`(`,`)`,`[`,`{`,`+`,`\`,`^`,`$`,`*`,`?`这些字符之外，其他的字符都会表示匹配自己。
+	
+	showRE('kangaroo',/angar/)    >> k<<angar>>oo
+	showRE('!@%&-_=+',/%&/)       >> !@<<%&>>-_=+
+	
+如果你想匹配上面这些特殊字符，你得使用相应的转义字符。这就解释了为什么我们在从文件中获取歌曲列表时用的正则表达式`/\s*\|\s*/`的`|`前加上`\`符号了。`\|`代表要匹配`|`符号。
+
+	showRE('yes | no', /\|/)	>>	yes <<|>> no
+	showRE('yes (no)', /\(no\)/)	>>	yes <<(no)>>
+	showRE('are you sure?', /e\?/)	>>	are you sur<<e?>>
+
+另外，正则表达式也可以使用`#{...}`来插入表达式的值。
+
+
+####锚点
+
+默认情况下，正则表达式会返回第一个匹配的字符串。`/iss/`会匹配`"Mississippi"`的第一个"iss"，并返回位置1。如果你想匹配字符串的最后一个或者第一个呢？
+
+`^`、`$`分别匹配行首、行末。所以你可以使用它们来做锚点，标志你想匹配行首还是行末。比如，`/^option/`只会匹配出现在行首的`option`。 `\A`表示匹配字符串的起始，`\z`或者`\Z`匹配字符串的结束。（如果字符串以换行符`\n`结束的话，`\Z`会匹配`\n`前面的字符）
+
+	showRE("this is\nthe time", /^the/)	»	this is\n<<the>> time
+	showRE("this is\nthe time", /is$/)	»	this <<is>>\nthe time
+	showRE("this is\nthe time", /\Athis/)	»	<<this>> is\nthe time
+	showRE("this is\nthe time", /\Athe/)	»	no match
+	
+类似地，`\b`和`\B`分别匹配单词的边界与非边界。单词字符意思是指26字母，数字还有下划线。
+
+	showRE("this is\nthe time", /\bis/)	»	this <<is>>\nthe time
+	showRE("this is\nthe time", /\Bis/)	»	th<<is>> is\nthe time
+	
+####字符集合
+
+一个字符集合是在`[ ]`里面的一推字符，可以匹配集合的任意一个字符。`[aeiou]`表示匹配一个元音字母。在字符集合中，`.`,`|`,`(`,`)`,`[`,`{`,`+`,`\`,`^`,`$`,`*`,`?`这些字符的作用会消失，只可以作为普通字符。但是，转义字符还是有效果的。`\b`表示退格键，`\n`表示换行。`\s`表示空格(空格，tab等)。
+
+	showRE('It costs $12.', /[aeiou]/)	 >> It c<<o>>sts $12.
+	showRE('It costs $12.', /[\s]/)     >> It<< >>costs $12.
+
+在方括号内，`c1-c2`表示从`c1`到`c2`的所有字符。
+
+如果你想在在字符集合中包含`]`和`-`,必须把它们放到第一个位置上。
+
+	a = 'Gamma [Design Patterns-page 123]'
+	showRE(a, /[]]/)	>>	Gamma [Design Patterns-page 123<<]>>
+	showRE(a, /[B-F]/)	>>	Gamma [<<D>>esign Patterns-page 123]
+	showRE(a, /[-]/)	>>	Gamma [Design Patterns<<->>page 123]
+	showRE(a, /[0-9]/)	>>	Gamma [Design Patterns-page <<1>>23]
+
+如果`^`是字符集合的第一个字符，那么表示取非。`[^a-z]`表示任一非小写字母。
+
+有一些集合比较常用，所以ruby提供了它们的缩写。看下表。
+
+	showRE('It costs $12.', /\s/)	>>	It<< >>costs $12.
+	showRE('It costs $12.', /\d/)	>>	It costs $<<1>>2.
+	
+**字符集合缩写表**：
+
+缩写          | 集合格式       | 描述
+------------ | ------------- | ------------
+\d           | [0-9]         | 数字字符
+\D           | [^0-9]        | 非数字字符
+\s           | [\s\t\r\n\f]  | 空白字符
+\S           | [^\s\t\r\n\f] | 非空白字符
+\w           | [A-Za-z0-9_]  | 单词字符
+\W           | [^A-Za-z0-9_] | 非单词字符
+
+最后，在中括号外，`.`可以表示任一字符，除了换行符（在多行模式下也可以表示换行符）。
+
+
+	a = 'It costs $12.'
+	showRE(a, /c.s/)	>>	It <<cos>>ts $12.
+	showRE(a, /./)	    >>	<<I>>t costs $12.
+	showRE(a, /\./)	    >>	It costs $12<<.>>
+
+####重复
+
+当我们想从文件中解析出歌曲的时候，用了正则表达式`/\s*\|\s*/`，由上面的表知道，`\s`表示空白字符，那么后面的`*`应该是表示多个特定字符的意思。事实上，`*`是数次限定标志的符号之一，说明前面的字符可以出现的次数。
+
+设`r`为出现在正则表达式的符号，那么：
+
+	r*       匹配0个或者更多的字符r
+	r+       匹配1个或者更多的字符r
+	r?       匹配0个或者1个字符r
+	r{m,n}   匹配最少m个，最多n个字符r
+	r{m,}    匹配最少m个字符r
+
+这些表示重复的标志符号有比较高的优先级－－它只是绑定它的前面的那个字符。/ab+/匹配由一个a，后面接着是大于等于1个b的字符串，而不是多个ab的字符串。你要小心`*`的使用，`/a*`可以匹配任意的字符串，因为任意的字符串都可以匹配有0个或多个`a`。
+
+默认情况下，这些模式会尽可能多的匹配字符串，这就是称它们为贪婪地的原因。你可以修改默认行为，通过添加`?`可以设置匹配最少。
+
+	a = "The moon is made of cheese"
+	showRE(a, /\w+/)	         >> 	<<The>> moon is made of cheese
+	showRE(a, /\s.*\s/)	         >>	    The<< moon is made of >>cheese
+	showRE(a, /\s.*?\s/)         >> 	The<< moon >>is made of cheese
+	showRE(a, /[aeiou]{2,99}/)	  >>	The m<<oo>>n is made of cheese
+	showRE(a, /mo?o/)	          >>	The <<moo>>n is made of cheese
+
+####选择
+
+我们知道`|`是个特殊的符号，因为在我们划分行内各个域的值的时候我们在`|`符号上加上了反斜线来表示符号本身（这叫做转义字符）。如果没有反斜线的话，出现`|`的模式代表了匹配符号之前的内容或者之后的内容。
+
+
+	a = "red ball blue sky"
+	showRE(a, /d|e/)	              >>	r<<e>>d ball blue sky
+	showRE(a, /al|lu/)	              >>	red b<<al>>l blue sky
+	showRE(a, /red ball|angry sky/)	   >>	<<red ball>> blue sky
+
+这里有一点要特别注意的，因为`|`的优先级比较低，所以最后一个例子会匹配`red ball`或者`angry sky`,而不是`red ball sky`或则会`red angry sky`，如果你要表示这个意思的话，你需要用到下面讲到的内容：分组。
+
+####分组
+
+####基于模式的替换
+
+####
+
+
+
 
