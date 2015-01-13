@@ -7,6 +7,10 @@ tag: nginx
 
 ---
 
+
+
+为了适应多个平台，和性能上的要求，nginx定义了多个高级数据结构，理解并灵活运用这些结构才可以更好的对nginx做开发或者debug。
+
  * list
  * queue
  * array
@@ -162,12 +166,12 @@ nginx定义的双向链表的结构很简单，就是一个包含前后指针的
 		Node * np = ngx_queue_data(queue, Node, qElem)
 	                                     
                                                 
-2. void ngx_queue_sort(ngx_queue_t *queue, ngx_int_t (*cmp)(const ngx_queue_t *, const ngx_queue_t *));
+2.  void ngx_queue_sort(ngx_queue_t *queue, ngx_int_t (*cmp)(const ngx_queue_t *, const ngx_queue_t *));
    
-   对双向链表queue排序，采用的是插入排序算法，实现在`/src/core/ngx_queue.c`。
-   参数`cmp`要自己实现。
+    对双向链表queue排序，采用的是插入排序算法，实现在`/src/core/ngx_queue.c`。
+    参数`cmp`要自己实现。
    
-   例子：
+    例子：
    		
    		ngx_int_t compare(const ngx_queue_t * que_a, const ngx_queue_t * que_b){
    			

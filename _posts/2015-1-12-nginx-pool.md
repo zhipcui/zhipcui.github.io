@@ -7,6 +7,7 @@ tag: nginx
 
 ---
 
+nginx定义了自己的内存池机制，nginx的高性能与其息息相关。
 
 **定义所在路径**:
 
@@ -18,7 +19,7 @@ tag: nginx
 nginx的内存池由2部分组成，一个是头部信息，和数据部。数据部包含了要分配的大块连续内存，而头部信息存储了关于当前分配内存的信息。
 
 **图解**
-![ngx_pool_t](../assets/image/nginx-pool-t.jpeg)
+![ngx_pool_t](/assets/image/nginx-pool-t.jpeg)
 
 **定义的结构**：
  
@@ -89,7 +90,7 @@ nginx的内存池由2部分组成，一个是头部信息，和数据部。数�
 
 **理解**
 
- 1.  ngx_create_pool（创建内存池）
+1.  ngx_create_pool（创建内存池）
  
 		ngx_pool_t * ngx_create_pool(size_t size, ngx_log_t *log){
 		
@@ -125,49 +126,50 @@ nginx的内存池由2部分组成，一个是头部信息，和数据部。数�
     		return p;
 		}
 		
-
-2. ngx_memalign（nginx封装内存对齐函数，`/src/os/ngx_alloc.c`）
 		
-		//宏“NGX_HAVE_POSIX_MEMALIGN”如系统为linux，则在系统检查的时候会设置
 		
-		#if (NGX_HAVE_POSIX_MEMALIGN)
+2.  ngx_memalign（nginx封装内存对齐函数，`/src/os/ngx_alloc.c`）
+		
+			//宏“NGX_HAVE_POSIX_MEMALIGN”如系统为linux，则在系统检查的时候会设置
+		
+			#if (NGX_HAVE_POSIX_MEMALIGN)
 
-		void *ngx_memalign(size_t alignment, size_t size, ngx_log_t *log){
-    		void  *p;
-    		int    err;
+			void *ngx_memalign(size_t alignment, size_t size, ngx_log_t *log){
+    			void  *p;
+    			int    err;
 
-    		err = posix_memalign(&p, alignment, size);
+    			err = posix_memalign(&p, alignment, size);
 
-    		if (err) {
-        		ngx_log_error(NGX_LOG_EMERG, log, err,
+    			if (err) {
+        			ngx_log_error(NGX_LOG_EMERG, log, err,
                       "posix_memalign(%uz, %uz) failed", alignment, size);
-        		p = NULL;
-    		}
+        			p = NULL;
+    			}
 
-    		ngx_log_debug3(NGX_LOG_DEBUG_ALLOC, log, 0,
+    			ngx_log_debug3(NGX_LOG_DEBUG_ALLOC, log, 0,
                    "posix_memalign: %p:%uz @%uz", p, size, alignment);
 
-    		return p;
-		}
+    			return p;
+			}
 
-		#elif (NGX_HAVE_MEMALIGN)
+			#elif (NGX_HAVE_MEMALIGN)
 
-		void *ngx_memalign(size_t alignment, size_t size, ngx_log_t *log){
-    		void  *p;
+			void *ngx_memalign(size_t alignment, size_t size, ngx_log_t *log){
+    			void  *p;
 
-    		p = memalign(alignment, size);
-    		if (p == NULL) {
-        		ngx_log_error(NGX_LOG_EMERG, log, ngx_errno,
+    			p = memalign(alignment, size);
+    			if (p == NULL) {
+        			ngx_log_error(NGX_LOG_EMERG, log, ngx_errno,
                       "memalign(%uz, %uz) failed", alignment, size);
-    		}
+    			}
 
-    		ngx_log_debug3(NGX_LOG_DEBUG_ALLOC, log, 0,
+    			ngx_log_debug3(NGX_LOG_DEBUG_ALLOC, log, 0,
                    "memalign: %p:%uz @%uz", p, size, alignment);
 
-    		return p;
-		}
+    			return p;
+			}
 
-		#endif
+			#endif
 
 
 3.	ngx_palloc（分配内存）
@@ -235,6 +237,7 @@ nginx的内存池由2部分组成，一个是头部信息，和数据部。数�
 
 5. 关于内存对齐的宏(`/src/core/ngx_config.h`)
 	
+	
 		#ifndef NGX_ALIGNMENT
 		#define NGX_ALIGNMENT   sizeof(unsigned long)    /* platform word */
 		#endif
@@ -246,7 +249,7 @@ nginx的内存池由2部分组成，一个是头部信息，和数据部。数�
 		
 	align是内存对齐的模，是2的n次幂。内存地址是对齐的特征：**内存地址是模的倍数，即2进制为后n位的值为0**；
 	对齐操作实际是对原地址向后移动了(a-p%a)位。
-	![ngx_align_ptr](../assets/image/ngx_align_ptr.gif)
+	![ngx_align_ptr](/assets/image/ngx_align.gif)
 
 
 
