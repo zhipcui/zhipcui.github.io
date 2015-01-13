@@ -336,3 +336,40 @@ nginx的内存池由2部分组成，一个是头部信息，和数据部。数�
 
 
 
+8. ngx_pool_cleanup_add（将具有自定义清理函数的数据挂载在内存池上）
+ 
+   内存池结构ngx_pool_t的`ngx_pool_cleanup_t *cleanup`项让内存池具有挂载自定义清理函数的数据的能力。比如：我们可以将一个打开的文件描述符作为资源挂载到内存池上，同时提供一个关闭文件描述的函数注册到handler上，那么内存池在释放的时候，就会调用我们提供的关闭文件函数来处理文件描述符资源了。
+
+		ngx_pool_cleanup_t *ngx_pool_cleanup_add(ngx_pool_t *p, size_t size){
+    		ngx_pool_cleanup_t  *c;
+
+    		c = ngx_palloc(p, sizeof(ngx_pool_cleanup_t));
+    		if (c == NULL) {
+        		return NULL;
+    		}
+
+    		if (size) {
+        		c->data = ngx_palloc(p, size);
+        		if (c->data == NULL) {
+            		return NULL;
+        		}
+
+    		} else {
+        		c->data = NULL;
+    		}
+
+    		c->handler = NULL;
+    		c->next = p->cleanup;
+
+    		p->cleanup = c;
+
+    		ngx_log_debug1(NGX_LOG_DEBUG_ALLOC, p->log, 0, "add cleanup: %p", c);
+
+    		return c;
+		}
+
+9. 关于内存的释放。
+   
+   nginx提供了申请内存的接口，但是没有提供释放的接口，但是总是要释放的，怎么来做呢？
+   
+   nginx的做法是，创建一个连接的同时创建内存池，释放连接的同时释放内存池内存。
