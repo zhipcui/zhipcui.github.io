@@ -487,6 +487,45 @@ range(范围)最主要的作用应该是用来表示一个序列了。序列有�
 
 ####分组
 
+在表达式中你可以用括号来改变匹配的优先级，也就是分组，一个组会看成是一个单独的表达式。
+
+
+	showRE('banana', /an*/)     >>   b<<an>>ana
+	showRE('banana', /(an)*/)   >>   <<>>banana
+	showRE('banana', /(an)+/)   >>   b<<anan>>a
+	
+	a = 'red ball blue sky'
+	showRE(a, /blue|red/)        >>  <<red>> ball blue sky
+	showRE(a, /(blue|red) \w+/)	  >>  <red ball>> blue sky
+	showRE(a, /(red|blue) \w+/)	  >>  <<red ball>> blue sky
+	showRE(a, /red|blue \w+/)    >>  <<red>> ball blue sky
+
+	showRE(a, /red (ball|angry) sky/)    >>  no match
+	a = 'the red angry sky'
+	showRE(a, /red (ball|angry) sky/)    >>  the <<red angry sky>>
+	
+使用分组来匹配还有一个特殊的作用，那就是匹配到的每一个分组的结果都会存储在一个特殊的全局变量中。ruby是根据`(`所出现的位置来给分组标号，然后将相应的结果存储到相应的位置上去。你可以在模式中和ruby代码中使用匹配结果的变量。在模式表达式中`\1`表示第一个分组的结果,	`\2`表示第二个，以此类推。在代码中，可以使用全局变量`$1,$2,..`。
+
+	"12:50am" =~ /(\d\d):(\d\d)(..)/         >>  0
+	"Hour is #$1, minute #$2"                >>  "Hour is 12, minute 50"
+	"12:50am" =~ /((\d\d):(\d\d))(..)/       >>  0
+	"Time is #$1"                            >>  "Time is 12:50"
+	"Hour is #$2, minute #$3"                >>  "Hour is 12, minute 50"
+	"AM/PM is #$4"                           >>  "AM/PM is am"
+
+使用这些特殊的变量可以让你搜索字符串中的重复子串。
+
+
+	# match duplicated letter
+	showRE('He said "Hello"', /(\w)\1/)      >>  He said "He<<ll>>o"
+	# match duplicated substrings
+	showRE('Mississippi', /(\w+)\1/)         >>  M<<ississ>>ippi
+	
+	
+	showRE('He said "Hello"', /(["']).*?\1/)  >>  He said <<"Hello">>
+	showRE("He said 'Hello'", /(["']).*?\1/)  >>  He said <<'Hello'>>
+
+
 ####基于模式的替换
 
 ####
