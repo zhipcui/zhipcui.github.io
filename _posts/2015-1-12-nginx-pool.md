@@ -252,5 +252,87 @@ nginx的内存池由2部分组成，一个是头部信息，和数据部。数�
 	![ngx_align_ptr](/assets/image/ngx_align.gif)
 
 
+6. ngx_palloc_block（当内存池内存不满足分配，则添加新块）
+
+		static void *ngx_palloc_block(ngx_pool_t *pool, size_t size){
+    		u_char      *m;
+    		size_t       psize;
+    		ngx_pool_t  *p, *new, *current;
+			
+			//内存池结构的头大小
+    		psize = (size_t) (pool->d.end - (u_char *) pool);
+
+    		m = ngx_memalign(NGX_POOL_ALIGNMENT, psize, pool->log);
+    		if (m == NULL) {
+        		return NULL;
+    		}
+
+    		new = (ngx_pool_t *) m;
+
+    		new->d.end = m + psize;
+    		new->d.next = NULL;
+    		new->d.failed = 0;
+
+    		m += sizeof(ngx_pool_data_t);
+    		m = ngx_align_ptr(m, NGX_ALIGNMENT);
+    		new->d.last = m + size;
+
+    		current = pool->current;
+
+			//若超过4次未能满足分配，则把当前活动块指向新创的块。意味着，不是每一个块都会被分配完。
+    		for (p = current; p->d.next; p = p->d.next) {
+        		if (p->d.failed++ > 4) {
+            		current = p->d.next;
+        		}
+    		}
+
+    		p->d.next = new;
+
+    		pool->current = current ? current : new;
+
+    		return m;
+		}
+
+
+7. ngx_palloc_large（如需求的内存大于最大允许分配量，则分配大内存）
+	
+		static void *ngx_palloc_large(ngx_pool_t *pool, size_t size){
+    		
+    		void              *p;
+    		ngx_uint_t         n;
+    		ngx_pool_large_t  *large;
+
+    		p = ngx_alloc(size, pool->log);
+    		if (p == NULL) {
+        		return NULL;
+    		}
+
+    		n = 0;
+
+    		for (large = pool->large; large; large = large->next) {
+        		if (large->alloc == NULL) {
+            		large->alloc = p;
+            		return p;
+        		}
+        		
+				//如果pool的large链长大于3，则把新的large块添加的large链的头部
+        		if (n++ > 3) {
+            		break;
+        		}
+    		}
+
+    		large = ngx_palloc(pool, sizeof(ngx_pool_large_t));
+    		if (large == NULL) {
+        		ngx_free(p);
+        		return NULL;
+    		}
+
+    		large->alloc = p;
+    		large->next = pool->large;
+    		pool->large = large;
+
+    		return p;
+		}
+
 
 
