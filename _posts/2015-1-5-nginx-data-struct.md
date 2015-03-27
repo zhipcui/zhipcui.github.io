@@ -27,7 +27,7 @@ tag: nginx
 采用了分组的方式实现链表。由于链表是动态数据结构，数据的数量是非固定的，所以采取的实现要有具备添加任意个数据项的能力。
 
 **图解**：
-![ngx_list_t](../assets/image/nginx-data-struct-list.png)
+![ngx_list_t](/assets/image/nginx-data-struct-list.png)
 
 **定义的结构**：   
 
@@ -301,7 +301,7 @@ nginx的hash是静态的，创建之后不能插入和删除，只能查找,所�
 4. nginx的hash是静态的，创建之后不能插入和删除，只能查找
 
 **图解**：
-![ngx_hash_t](../assets/image/ngx_hash_t.png)
+![ngx_hash_t](/assets/image/ngx_hash_t.png)
 
 **定义的结构**：   
 
@@ -643,7 +643,7 @@ nginx的hash是静态的，创建之后不能插入和删除，只能查找,所�
 
 3. ngx_hash_add_key（添加key-value对到初始化数组中）
 	
-	图解：![ngx_hash_add_key](../assets/image/ngx_hash_add_key.png)
+	图解：![ngx_hash_add_key](/assets/image/ngx_hash_add_key.png)
 	
 	
 		ngx_int_t ngx_hash_add_key(ngx_hash_keys_arrays_t *ha, ngx_str_t *key, void *value, ngx_uint_t flags){
