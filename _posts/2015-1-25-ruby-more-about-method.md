@@ -1,5 +1,12 @@
 
+---
+layout: post
+title:  "ruby方法"
+date:   2015-1-25
+categories: Ruby
+tag: Programming Ruby
 
+---
 
 
 其他的一些语言有函数、方法、过程等，但是ruby只有方法－一段具有返回值的代码段。
