@@ -10,7 +10,7 @@ tag: nginx
 
 nginx会依赖几个通用的库，若你的系统没有安装，则会提示配置错误
 
-###### PCRE library (用户处理正则表达式)
+#### PCRE library (用户处理正则表达式)
   
  1. 下载PCRE
  
@@ -26,7 +26,7 @@ nginx会依赖几个通用的库，若你的系统没有安装，则会提示配
  			make
  			make install
  	
-###### gcc-c++安装
+#### gcc-c++安装
 在安装PCRE时，需要支持对c＋＋的编译，大多数情况下，Linux都会默认支持，若出现改错误，则按下面步骤安装即可。
 
 
@@ -35,7 +35,7 @@ nginx会依赖几个通用的库，若你的系统没有安装，则会提示配
 			yum install -y gcc gcc-c++
 			
 			
-###### zlib library
+#### zlib library
 
 Nginx HTTP gzip模块依赖该库，如系统没有则报错，按下面步骤安装即可。
 
@@ -65,7 +65,7 @@ Nginx HTTP gzip模块依赖该库，如系统没有则报错，按下面步骤�
 		
 		./configure --prefix=/usr/nginx
 		
-5.编译、安装
+5. 编译、安装
 
 		make
 		make install
