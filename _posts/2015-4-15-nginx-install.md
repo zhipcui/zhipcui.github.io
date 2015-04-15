@@ -1,5 +1,3 @@
-
-
 ---
 layout: post
 title:  "nginx安装"
@@ -8,6 +6,8 @@ categories: nginx
 tag: nginx
 
 ---
+
+
 nginx会依赖几个通用的库，若你的系统没有安装，则会提示配置错误
 
 ###### PCRE library (用户处理正则表达式)
