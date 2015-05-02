@@ -7,8 +7,8 @@ tag: nginx
 
 ---
 
-nginx采用了非阻塞的事件模型，可以同时监听多个事件。nginx目前实现了kqueue、epoll、select、poll、eventport、aio、devpoll、rtsig和基于windows的select共9个事件模型。具体使用哪一个可以在配置文件中设置，nginx关于事件模型的设置是在`events{}`块中设置，如:	
-	
+nginx采用了非阻塞的事件模型，可以同时监听多个事件。nginx目前实现了kqueue、epoll、select、poll、eventport、aio、devpoll、rtsig和基于windows的select共9个事件模型。具体使用哪一个可以在配置文件中设置，nginx关于事件模型的设置是在`events{}`块中设置，如:
+
 	events{
 		use kqueue;
 	}nginx的事件模块中有2个关键模块:`ngx_events_module`、`ngx_event_core_module`。
