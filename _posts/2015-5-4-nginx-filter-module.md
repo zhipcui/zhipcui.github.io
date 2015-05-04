@@ -263,5 +263,5 @@ auto/modules脚本关于过滤模块的部分：
 	HTTP_HEADER_FILTER_MODULE,
 	HTTP_WRITE_FILTER_MODULE
 	
-configure脚本运行的过程中会把所有的模块输出到objs/ngx_modules.c文件中，文件中的各个模块顺序就是nginx处理http请求时的顺序。所以修改各个模块的处理顺序有2种方式，一种是直接留给configure脚本，二是修改objs/ngx_modules.c文件中各个模块的顺序。通常情况下你不需要修改过滤模块的顺序，如果要修改，需要非常清楚nginx默认添加的过滤模块具体干了什么，因为过滤模块的顺序非常重要，而nginx的默认过滤模块做了非常基本的工作，如果改变了顺序，可能导致一些致命的错误。
+configure脚本运行的过程中会把所有的模块输出到objs/ngx_modules.c文件中，文件中的各个模块顺序就是nginx处理http请求时的顺序。所以修改各个模块的处理顺序有2种方式，一种是直接修改configure脚本，二是修改objs/ngx_modules.c文件中各个模块的顺序。通常情况下你不需要修改过滤模块的顺序，如果要修改，需要非常清楚nginx默认添加的过滤模块具体干了什么，因为过滤模块的顺序非常重要，而nginx的默认过滤模块做了非常基本的工作，如果改变了顺序，可能导致一些致命的错误。
 	
