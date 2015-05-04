@@ -8,7 +8,7 @@ tag: nginx
 ---
 
 
-假设你需要对nginx返回的内容做进一步的处理，如返回的内容是文本文件，你需要在文件的头部插入特定的字符串，或者你希望返回的内容是压缩过的。这些都可以通过nginx的过滤模块来实现的。nginx自身就实现了多个过滤模块，也允许开发着开发自己的过滤模块。
+假设你需要对nginx返回的内容做进一步的处理，如返回的内容是文本文件，你需要在文件的头部插入特定的字符串，或者你希望返回的内容是压缩过的。这些都可以通过nginx的过滤模块来实现的。nginx自身就实现了多个过滤模块，也允许开发者开发自己的过滤模块。
 
 ###多个过滤模块是如何组织在一起的
 
@@ -16,7 +16,7 @@ tag: nginx
 
 nginx可以有多个过滤模块，一个过滤模块处理完之后，就会把处理的结果传给下一个过滤模块，和工厂的流水线有点类似。那多个过滤模块是如何串联成流水线形式的呢？答案是链表。
 
-链表是通过2个特殊变量来实现的，首先有个全局top变量(ngx_http.h文件中定义),指向第一个过滤模块：
+这里提到链表是通过2个特殊变量来实现的，首先有个全局top变量(在ngx_http.h文件中定义),它指向第一个过滤模块：
 	
 	extern ngx_http_output_header_filter_pt  ngx_http_top_header_filter;   //指向第一个head过滤模块
 	extern ngx_http_output_body_filter_pt    ngx_http_top_body_filter;     //指向第一个body过滤模块
@@ -28,14 +28,14 @@ nginx可以有多个过滤模块，一个过滤模块处理完之后，就会把
 
 next变量的存储类型是静态的，表明该变量只能在该模块所在的文件中修改，确保过滤模块的链表是顺序唯一的。
 
-![ngx_filter_module_list](../assets/image/ngx_filter_module_list.png)
+![ngx_filter_module_list](/assets/image/ngx_filter_module_list.png)
 
-top变量和next变量都是指针类型，指向了某个函数，该函数用来实现过滤模块真正要做的内容，过滤模块大部分的工作都是实现该函数。`ngx_http_output_header_filter_pt`和`ngx_http_output_body_filter_pt`在ngx_http_core_module.h的定义如下：
+top变量和next变量都是指针类型，指向了某个函数，该函数用来实现过滤模块真正要做的内容，开发一个过滤模块大部分的工作都是实现该函数。`ngx_http_output_header_filter_pt`和`ngx_http_output_body_filter_pt`的定义（ngx_http_core_module.h）如下：
 
 	typedef ngx_int_t (*ngx_http_output_header_filter_pt)(ngx_http_request_t *r);
 	typedef ngx_int_t (*ngx_http_output_body_filter_pt)(ngx_http_request_t *r, ngx_chain_t *chain);
 
-需要在nginx启动的某个时刻设置好过滤模块的链表，通常的做法是在模块上写文结构体的postconfiguration域设置，如nginx的gunzip过滤模块的实现：
+需要在nginx启动的某个时刻设置好过滤模块的链表，通常的做法是在模块上下文结构体的postconfiguration域设置，如nginx的gunzip过滤模块的实现：
 
 	static ngx_http_module_t  ngx_http_gunzip_filter_module_ctx = {
     	NULL,                                  /* preconfiguration */
@@ -57,7 +57,7 @@ gunzip模块在某处定义了next变量：
 	static ngx_http_output_header_filter_pt  ngx_http_next_header_filter;
 	static ngx_http_output_body_filter_pt    ngx_http_next_body_filter;
 
-nginx在获取到相应模块的配置后会调用ngx_http_gunzip_filter_init来初始化定义的模块,看看gunzip过滤模块在ngx_http_gunzip_filter_init函数干了什么：
+nginx在获取到相应模块的配置后就会调用`ngx_http_gunzip_filter_init`方法来初始化定义的模块,看看gunzip过滤模块在`ngx_http_gunzip_filter_init`函数干了什么：
 
 	static ngx_int_t ngx_http_gunzip_filter_init(ngx_conf_t *cf)
 	{
@@ -70,7 +70,7 @@ nginx在获取到相应模块的配置后会调用ngx_http_gunzip_filter_init来
     	return NGX_OK;
 	}
 	
-可以看到，上面的函数就是用来设置过滤链表的，把过滤模块的处理方法插入到整个过滤链表的首部，所以过滤模块的处理顺序是逆序的，插入链表的时机越早，处理的时机就越晚。
+可以看到，上面的函数就是用来设置过滤链表的，把过滤模块的处理方法插入到整个过滤链表的首部，同时看一看出过滤模块的处理顺序是逆序的，插入链表的时机越早，处理的时机就越晚。
 
 ###过滤模块是如何介入http处理的
 
@@ -231,7 +231,7 @@ auto/modules脚本关于过滤模块的部分：
 	fi
 
 
-在auto/modules脚本里面会添加一些nginx默认的过滤模块。在调用configure脚本的时候可以通过--add-module参数来添加过滤模块，之后auto/modules会把添加的模块插入链表中。
+在auto/modules脚本里面会添加一些nginx默认的过滤模块。在调用configure脚本的时候可以通过--add-module参数来添加过滤模块，之后auto/modules会把添加的模块添加进来。
 
 	if [ $HTTP = YES ]; then
     	modules="$modules $HTTP_MODULES $HTTP_FILTER_MODULES \
@@ -246,7 +246,7 @@ auto/modules脚本关于过滤模块的部分：
 	
 	
 	
-通过上面的脚本分析，可以得到所有过滤模块的顺序如下，（默认情况下，具体得依赖安装nginx时配置）：
+通过上面的脚本分析，可以得到所有过滤模块的顺序如下，（默认情况下如此，具体得依赖安装nginx时配置）：
 	
 	HTTP_NOT_MODIFIED_FILTER_MODULE,
 	HTTP_RANGE_BODY_FILTER_MODULE,
@@ -263,5 +263,5 @@ auto/modules脚本关于过滤模块的部分：
 	HTTP_HEADER_FILTER_MODULE,
 	HTTP_WRITE_FILTER_MODULE
 	
-configure脚本运行的过程中会把所有的模块输出到objs/ngx_modules.c文件中，文件中的各个模块顺序就是nginx处理http请求时的顺序。所以修改各个模块的处理顺序有2种方式，一种是直接留给configure脚本，二是修改objs/ngx_modules.c文件中各个模块的顺序。
+configure脚本运行的过程中会把所有的模块输出到objs/ngx_modules.c文件中，文件中的各个模块顺序就是nginx处理http请求时的顺序。所以修改各个模块的处理顺序有2种方式，一种是直接留给configure脚本，二是修改objs/ngx_modules.c文件中各个模块的顺序。通常情况下你不需要修改过滤模块的顺序，如果要修改，需要非常清楚nginx默认添加的过滤模块具体干了什么，因为过滤模块的顺序非常重要，而nginx的默认过滤模块做了非常基本的工作，如果改变了顺序，可能导致一些致命的错误。
 	
