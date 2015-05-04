@@ -128,12 +128,22 @@
 	
 	
         <li>
-        <h2 class="post-list__post-title post-title"><a href="/nginx/2015/05/02/nginx-events-module.html" title="nginx事件模型">nginx事件模型</a></h2>
-        <p class="excerpt">nginx采用了非阻塞的事件模型，可以同时监听多个事件。nginx目前实现了kqueue、epoll、select、poll、eventport、aio、devpoll、rtsig和基于windows的select共9个事件模型。具体使用哪一个可以在配置文件中设置，nginx关于事件模型的设置是在`events{}`块中设置，如:	
+        <h2 class="post-list__post-title post-title"><a href="/nginx/2015/05/04/nginx-filter-module.html" title="nginx http过滤模块">nginx http过滤模块</a></h2>
+        <p class="excerpt">假设你需要对nginx返回的内容做进一步的处理，如返回的内容是文本文件，你需要在文件的头部插入特定的字符串，或者你希望返回的内容是压缩过的。这些都可以通过nginx的过滤模块来实现的。nginx自身就实现了多个过滤模块，也允许开发着开发自己的过滤模块。
+
+</p>
+        <div class="post-list__meta"><time datetime="04 May 2015" class="post-list__meta--date date">04 May 2015</time> &#8226; <span class="post-list__meta--tags tags">于 <a href="/tag/nginx">nginx</a></span><a class="btn-border-small" href="/nginx/2015/05/04/nginx-filter-module.html"/>继续阅读</a></div>
+        <hr class="post-list__divider" />
+
+      </li>
+    
 	
-	events{
-		use kqueue;
-	}nginx的事件模块中有2个关键模块:`ngx_events_module`、`ngx_event_core_module`。
+	
+	
+	
+        <li>
+        <h2 class="post-list__post-title post-title"><a href="/nginx/2015/05/02/nginx-events-module.html" title="nginx事件模型">nginx事件模型</a></h2>
+        <p class="excerpt">nginx采用了非阻塞的事件模型，可以同时监听多个事件。nginx目前实现了kqueue、epoll、select、poll、eventport、aio、devpoll、rtsig和基于windows的select共9个事件模型。具体使用哪一个可以在配置文件中设置，nginx关于事件模型的设置是在`events{}`块中设置，如:
 
 </p>
         <div class="post-list__meta"><time datetime="02 May 2015" class="post-list__meta--date date">02 May 2015</time> &#8226; <span class="post-list__meta--tags tags">于 <a href="/tag/nginx">nginx</a></span><a class="btn-border-small" href="/nginx/2015/05/02/nginx-events-module.html"/>继续阅读</a></div>
