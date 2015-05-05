@@ -130,7 +130,7 @@ ngx_http_phase_handler_t结构代表了一个处理方法，它不仅包含了�
 
 在解析http块配置的时候，nginx会调用方法来设置phase_engine的值。
 
-![](../assets/image/ngx_http_phase.png)
+![](/assets/image/ngx_http_phase.png)
 
 其中，`ngx_http_init_phases()`方法初始化`ngx_http_core_main_conf_t`的`phases`的值：
 
@@ -349,4 +349,6 @@ Nginx的http框架是通过每个阶段的checker方法来调度handle的，不�
 
     	return NGX_OK;
 	}
+	
+checker方法会根据hander方法的返回值来判断下一步的动作，下面给出各个返回值的意义：1)	NGX_OK：执行下一个阶段的第一个hander方法，忽略掉当前阶段后面没有执行的handler。2)	NGX_DECLINED：顺序执行下一个hander。3)	NGX_AGAIN：当前的hander方法还没有结束，可能需要再次调用。通常会把处理控制权交个事件模块，在下一次可写事件触发时会再次执行该hander。4)	NGX_DONE：与NGX_AGAIN返回值意义相同。5)	NGX_ERROR：出错，结束请求。
 
