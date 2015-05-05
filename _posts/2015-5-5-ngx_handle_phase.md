@@ -310,3 +310,5 @@ ngx_http_phase_handler_t结构代表了一个处理方法，它不仅包含了�
 	
 	
 如果你读懂了上面的这段代码，会发现，并不是添加到phases的所有handle都会起作用，比如在处理`NGX_HTTP_FIND_CONFIG_PHASE`阶段时，直接跳到了下一阶段的处理，意味在postconfiguration()方法中添加到`phases[NGX_HTTP_FIND_CONFIG_PHASE]`的handle方法，最终并不会添加到phase_engines中，也就无法介入http的请求。相类似的还有NGX_HTTP_POST_REWRITE_PHASE、NGX_HTTP_POST_ACCESS_PHASE、NGX_HTTP_TRY_FILES_PHASE这三个阶段。
+
+
