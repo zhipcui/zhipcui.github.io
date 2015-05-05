@@ -312,3 +312,41 @@ ngx_http_phase_handler_t结构代表了一个处理方法，它不仅包含了�
 如果你读懂了上面的这段代码，会发现，并不是添加到phases的所有handle都会起作用，比如在处理`NGX_HTTP_FIND_CONFIG_PHASE`阶段时，直接跳到了下一阶段的处理，意味在postconfiguration()方法中添加到`phases[NGX_HTTP_FIND_CONFIG_PHASE]`的handle方法，最终并不会添加到phase_engines中，也就无法介入http的请求。相类似的还有NGX_HTTP_POST_REWRITE_PHASE、NGX_HTTP_POST_ACCESS_PHASE、NGX_HTTP_TRY_FILES_PHASE这三个阶段。
 
 
+Nginx的http框架是通过每个阶段的checker方法来调度handle的，不同阶段的checker有不同的实现，下面是对nginx提供的NGX_HTTP_POST_READ_PHASE阶段的checker方法ngx_http_core_generic_phase()的分析，其他的checker与此类似。
+
+	ngx_int_t
+	ngx_http_core_generic_phase(ngx_http_request_t *r, ngx_http_phase_handler_t *ph)
+	{
+    	ngx_int_t  rc;
+
+    	/*
+     	* generic phase checker,
+     	* used by the post read and pre-access phases
+     	*/
+
+    	ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+                   "generic phase: %ui", r->phase_handler);
+
+    	rc = ph->handler(r);
+
+    	if (rc == NGX_OK) {
+        	r->phase_handler = ph->next;
+        	return NGX_AGAIN;
+    	}
+
+    	if (rc == NGX_DECLINED) {
+        	r->phase_handler++;
+        	return NGX_AGAIN;
+    	}
+
+    	if (rc == NGX_AGAIN || rc == NGX_DONE) {
+        	return NGX_OK;
+    	}
+
+    	/* rc == NGX_ERROR || rc == NGX_HTTP_...  */
+
+    	ngx_http_finalize_request(r, rc);
+
+    	return NGX_OK;
+	}
+
