@@ -128,6 +128,20 @@
 	
 	
         <li>
+        <h2 class="post-list__post-title post-title"><a href="/nginx/2015/05/06/ngx-http-request-flow.html" title="nginx http请求的执行过程">nginx http请求的执行过程</a></h2>
+        <p class="excerpt">上一篇博文中介绍了http请求的11个过程，以及第三方模块应该如何使得自定义的方法介入http请求中。这篇文章将分析nginx是怎么以及何时调用这11个过程的各个handle的。下图展示了nginx从接收到用户请求到执行handle的整个过程。
+
+</p>
+        <div class="post-list__meta"><time datetime="06 May 2015" class="post-list__meta--date date">06 May 2015</time> &#8226; <span class="post-list__meta--tags tags">于 <a href="/tag/nginx">nginx</a></span><a class="btn-border-small" href="/nginx/2015/05/06/ngx-http-request-flow.html"/>继续阅读</a></div>
+        <hr class="post-list__divider" />
+
+      </li>
+    
+	
+	
+	
+	
+        <li>
         <h2 class="post-list__post-title post-title"><a href="/nginx/2015/05/05/ngx_handle_phase.html" title="nginx http的请求阶段">nginx http的请求阶段</a></h2>
         <p class="excerpt">当一个用户的http请求发送过来后，nginx的事件模块会监测到请求并建立连接，然后剩下的工作就交给http框架来处理了。那么从接收到http完整的请求头部到给用户返回响应的工程是怎么样的呢？第三方http模块又是如何介入http的处理流程的呢？
 
