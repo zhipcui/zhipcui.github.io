@@ -25,7 +25,7 @@ nginx是一款优秀的反向代理服务器，其代理功能是通过upstream�
 		...
 	}
 	
-nginx接收的每一个请求都由一个ngx_http_request_t结构表示，在该结构中有一个upstream值用来实现upstream，这代表了每一个来自用户的请求都有能力访问上游服务器。在不需要访问上游服务器时，upstream的值为空，反正，则只需要创建upstream，设置upstream的回调方法，并调用upstream提供的启动方法就可以访问上游服务器了。这时候，处理http请求的各个模块阶段处理方法将失效，所有的处理将交给upstream调用设置好的回调来完成。
+nginx接收的每一个请求都由一个ngx_http_request_t结构表示，在该结构中有一个upstream值用来实现upstream，这代表了每一个来自用户的请求都有能力访问上游服务器。在不需要访问上游服务器时，upstream的值为空，反之，则只需要创建upstream，设置upstream的回调方法，并调用upstream提供的启动方法就可以访问上游服务器了。这时候，处理http请求的各个模块阶段处理方法将失效，所有的处理将交给upstream调用设置好的回调来完成。
 
 ![](../assets/image/ngx-upstream.png)
 
