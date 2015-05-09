@@ -39,6 +39,7 @@ upstream提供了创建upstream的方法，传入request参数，直接调用就
 
 这一步是访问上游服务器至关重要的一步，启动以及启动之后的所有事件处理都依赖upstream的设置，如果设置不当会使得访问失败。
 
+
 	struct ngx_http_upstream_s {
     	ngx_http_upstream_handler_pt     read_event_handler;
     	ngx_http_upstream_handler_pt     write_event_handler;
