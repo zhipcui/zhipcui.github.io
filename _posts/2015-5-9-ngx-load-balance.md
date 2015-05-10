@@ -67,7 +67,7 @@ nginx允许配置任意数量的upstream配置块，每一个配置块可以有�
     	void                            *data;
 	} ngx_http_upstream_peer_t;
 
-![](/assets/image/ngx-load-balance.png)
+![load balance](/assets/image/ngx-load-balance.png)
  
 在upstream启动之后，会调用ngx_http_upstream_init_request()方法来初始化连接，其中一个重要的工作就设置好上游服务器的地址，从上图也可以看出，负载均衡工作最后的结果就是设置好connect()函数的sockaddr参数。如果upstream->resolved->sockaddr不为空，则说明采用了第一种方式来设置上游服务器地址，即直接给定了ip地址或者域名，否则就会调用peer的get方法()来获取指定的集群中的某台服务器，而负载均衡算法就是在get()方法中实现的，所以要开发一个特大算法的负载均衡模块的话，最重要的工作就是实现peer的get()方法。peer是ngx_peer_connection_t结构的变量，代表了一个主动连接(nginx发起的连接)。
 
