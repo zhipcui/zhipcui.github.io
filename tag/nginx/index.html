@@ -130,16 +130,6 @@
         <li>
         <h2 class="post-list__post-title post-title"><a href="/nginx/2015/05/09/ngx-load-balance.html" title="nginx 负载均衡">nginx 负载均衡</a></h2>
         <p class="excerpt">负载均衡是指按照一定的策略，在多个服务器的集群中选择一台合适的机器来服务请求，已达到性能最佳的机制。性能最佳是以负载均衡的算法来衡量的，比较常用的负载均衡算法有如下几种：
- 
- 1. 轮询：按顺序把每一个新的连接分配给服务器列表中的下一个服务器。
- 2. 加权轮询：给每个服务器一个权值，并将连接按权值比例来分配。
- 3. ip_hash：根据连接的IP地址的hash值来分配服务器，来自同一IP的请求总是由同一个服务器服务。
- 4. 最少连接：新的连接将分配到当前连接数最少的服务器。
- 5. 最快响应：新的连接将分配到具有最快响应时间的服务器。
- 
-###nginx负载均衡如何实现的
- 
-nginx作为一款高性能的反向代理服务器 ，实现了加权轮询、ip_hash和最少连接的负载均衡算法，而且nginx允许使用第三方开发的负载均衡算法。在上一篇文章中分析upstream机制时，没有提到如何设置上游服务器的连接地址，因为这一部分和负载均衡服务有关。nginx的负载均衡是对访问上游服务器的地址选择策略，是在upstream模块中实现的。upstream结构中有2个域与负载均衡密切相关:peer与resolved。
 
 </p>
         <div class="post-list__meta"><time datetime="09 May 2015" class="post-list__meta--date date">09 May 2015</time> &#8226; <span class="post-list__meta--tags tags">于 <a href="/tag/nginx">nginx</a></span><a class="btn-border-small" href="/nginx/2015/05/09/ngx-load-balance.html"/>继续阅读</a></div>

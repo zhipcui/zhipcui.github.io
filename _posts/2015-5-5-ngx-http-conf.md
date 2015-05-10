@@ -47,12 +47,12 @@ http框架是nginx内容最丰富的部分，有非常多的http模块，但是�
 ###代码处理过程
 
 
-![](../assets/image/ngx_http_conf_code.png)
+![](/assets/image/ngx_http_conf_code.png)
 
 
 ###数据结构分析
 
-![](../assets/image/ngx_http_conf_data.png)
+![](/assets/image/ngx_http_conf_data.png)
 
 
 下面看一下设计的数据结构的定义，只列出与配置相关的域。
