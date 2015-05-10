@@ -9,7 +9,7 @@ tag: nginx
 
 nginx是一款优秀的反向代理服务器，其代理功能是通过upstream机制来实现的，upstream是http框架的一部分。upstream使得nginx具有访问上游服务器的能力，并且可以通过组建集群来实现对上游服务器的负载均衡。
 
-![](../assets/image/ngx-proxy.png)
+![](/assets/image/ngx-proxy.png)
 
 访问上游服务器的过程与普通的http请求是一致的，不同的是普通的请求是用户连接到nginx服务器，而访问上游服务器是nginx连接到上游服务器。既然如此，那upstream就需要解决2个基本的问题：
 
@@ -27,7 +27,7 @@ nginx是一款优秀的反向代理服务器，其代理功能是通过upstream�
 	
 nginx接收的每一个请求都由一个ngx_http_request_t结构表示，在该结构中有一个upstream值用来实现upstream，这代表了每一个来自用户的请求都有能力访问上游服务器。在不需要访问上游服务器时，upstream的值为空，反之，则只需要创建upstream，设置upstream的回调方法，并调用upstream提供的启动方法就可以访问上游服务器了。这时候，处理http请求的各个模块阶段处理方法将失效，所有的处理将交给upstream调用设置好的回调来完成。
 
-![](../assets/image/ngx-upstream.png)
+![](/assets/image/ngx-upstream.png)
 
 ####创建upstream
 
@@ -242,7 +242,7 @@ connect_timeout、send_timeout、read_timeout分别表示连接超时、发送�
 在设置好所有需要设置的选项之后，就可以调用upstream提供的ngx_http_upstream_init()方法来启动upstream，然后upstream就会根据设置与上游服务器建立连接，并添加可读可写事件到事件模型中监听，在事件触发之后就调用相应的回调方法来处理。
 
 
-![](../assets/image/ngx-upstream-connect.png)
+![](/assets/image/ngx-upstream-connect.png)
 
 其中，在upstream工作的各个阶段中，只要出现错误即会调用ngx_http_upstream_finalize_request()来终止连接。
 
